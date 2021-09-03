@@ -1,6 +1,16 @@
-FROM python:3-alpine
+FROM node:lts-alpine as builder
 
-RUN pip install requests
-COPY run.py /run.py
+WORKDIR /app
+COPY package.json package-lock.json /app/
+RUN npm i
+COPY . /app
+RUN npm run build
 
-CMD ["python", "/run.py"]
+
+FROM node:lts-alpine
+
+WORKDIR /app
+COPY --from=builder /app/dist /app/package.json /app/package-lock.json /app/
+RUN npm install --only=production
+
+CMD ["node", "index.js"]
