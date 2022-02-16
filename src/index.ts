@@ -12,6 +12,7 @@ if (!TELEGRAM_USER || TELEGRAM_USER.length < 6) throw new ConfigError('TELEGRAM_
 if (!TELEGRAM_TOKEN || TELEGRAM_TOKEN.length < 30) throw new ConfigError('TELEGRAM_TOKEN');
 
 const CONFIG = { CTLAB_UID, TELEGRAM_USER, TELEGRAM_TOKEN };
+const SUCCESS_MESSAGE = 'La jornada ha sido validada correctamente. Gracias por su colaboración.';
 
 function getDate() {
   const now = new Date();
@@ -31,7 +32,9 @@ async function main() {
   const { window } = await fetch(url)
     .then((r) => r.text())
     .then((t) => new JSDOM(t));
-  const isOk = window.document.querySelector('#ContentPlaceHolder1_lblMensajeConfirmacion') !== null;
+
+  const element = window.document.querySelector('#ContentPlaceHolder1_lblMensajeConfirmacion')
+  const isOk = element && element.innerHTML === SUCCESS_MESSAGE;
   await sendMessage(isOk ? '🤤🤤🤤🤤🤤🤤 LABURIÓÓÓÓ' : '🚨🚨🚨🚨🚨🚨 AAAAH NO LABURIÓ');
 }
 
